@@ -10,7 +10,7 @@ import net.pookie.pukeko.entity.custom.PukekoEntity;
 
 public class PukekoRenderer extends MobRenderer<PukekoEntity, PukekoModel<PukekoEntity>> {
     public PukekoRenderer(EntityRendererProvider.Context context) {
-        super(context, new PukekoModel<>(context.bakeLayer(PukekoModel.LAYER_LOCATION)), 1.0f);
+        super(context, new PukekoModel<>(context.bakeLayer(PukekoModel.LAYER_LOCATION)), 0.75f);
     }
 
     @Override
@@ -21,7 +21,7 @@ public class PukekoRenderer extends MobRenderer<PukekoEntity, PukekoModel<Pukeko
     @Override
     public void render(PukekoEntity entity, float entityYaw, float partialTicks, PoseStack poseStack, MultiBufferSource buffer, int packedLight) {
         if (entity.isBaby()) {
-            poseStack.scale(0.5f, 0.5f, 1.0f); // Change the z later (funny hehe)
+            poseStack.scale(0.5f, 0.5f, 0.5f);
         } else {
             poseStack.scale(1f, 1f, 1f);
         }

@@ -40,8 +40,14 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 
 import javax.swing.text.html.parser.Entity;
 
+// Build: ./gradlew build
+
 // TO-DO
+
 // * Add Spawn egg
+// * Add Sounds
+// * Add Drops
+// * Add Variants
 
 @Mod(Pukeko.MODID)
 public class Pukeko {

@@ -1,6 +1,5 @@
 package net.pookie.pukeko.entity;
 
-
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
@@ -20,6 +19,6 @@ public class ModEntities {
                     .sized(1.0f, 1.0f).build("pukeko"));
 
     public static void register(IEventBus eventBus) {
-        ENTITY_TYPES.register((eventBus));
+        ENTITY_TYPES.register(eventBus);
     }
 }

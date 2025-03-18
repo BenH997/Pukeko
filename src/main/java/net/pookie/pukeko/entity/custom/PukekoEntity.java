@@ -14,7 +14,6 @@ import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.Level;
 import net.pookie.pukeko.entity.ModEntities;
 import org.jetbrains.annotations.Nullable;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 
 public class PukekoEntity extends Animal {
@@ -34,7 +33,7 @@ public class PukekoEntity extends Animal {
         // Keep head above water
         this.goalSelector.addGoal(0, new FloatGoal(this));
 
-        this.goalSelector.addGoal(1, new PanicGoal(this, 5.0));
+        this.goalSelector.addGoal(1, new PanicGoal(this, 3.0));
 
         // Breeding/bb stuff
         this.goalSelector.addGoal(2, new BreedGoal(this, 1.0));
@@ -79,7 +78,7 @@ public class PukekoEntity extends Animal {
         super.tick();
 
         if (this.level().isClientSide()) {
-            //this.setupAnimationStates();
+            this.setupAnimationsStates();
         }
     }
 

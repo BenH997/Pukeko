@@ -12,6 +12,7 @@ import net.pookie.pukeko.entity.custom.PukekoEntity;
 @EventBusSubscriber(modid = Pukeko.MODID, bus = EventBusSubscriber.Bus.MOD)
 public class ModEventBusEvents {
 
+    @SubscribeEvent
     public static void registerLayers(EntityRenderersEvent.RegisterLayerDefinitions event) {
         event.registerLayerDefinition(PukekoModel.LAYER_LOCATION, PukekoModel::createBodyLayer);
     }
