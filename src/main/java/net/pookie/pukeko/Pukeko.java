@@ -1,5 +1,9 @@
 package net.pookie.pukeko;
 
+import net.minecraft.client.renderer.entity.EntityRenderers;
+import net.neoforged.neoforge.client.event.EntityRenderersEvent;
+import net.pookie.pukeko.entity.ModEntities;
+import net.pookie.pukeko.entity.client.PukekoRenderer;
 import org.slf4j.Logger;
 
 import com.mojang.logging.LogUtils;
@@ -34,7 +38,11 @@ import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
-// The value here should match an entry in the META-INF/neoforge.mods.toml file
+import javax.swing.text.html.parser.Entity;
+
+// TO-DO
+// * Add Spawn egg
+
 @Mod(Pukeko.MODID)
 public class Pukeko {
     public static final String MODID = "pukekomod";
@@ -50,6 +58,10 @@ public class Pukeko {
         // Note that this is necessary if and only if we want *this* class (ExampleMod) to respond directly to events.
         // Do not add this line if there are no @SubscribeEvent-annotated functions in this class, like onServerStarting() below.
         NeoForge.EVENT_BUS.register(this);
+
+
+        ModEntities.register(modEventBus); // Register entities
+
 
         // Register the item to a creative tab
         modEventBus.addListener(this::addCreative);
@@ -78,7 +90,7 @@ public class Pukeko {
     {
         @SubscribeEvent
         public static void onClientSetup(FMLClientSetupEvent event) {
-
+            EntityRenderers.register(ModEntities.PUKEKO.get(), PukekoRenderer::new);
         }
     }
 }
