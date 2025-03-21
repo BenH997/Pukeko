@@ -4,6 +4,7 @@ import net.minecraft.client.renderer.entity.EntityRenderers;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.pookie.pukeko.entity.ModEntities;
 import net.pookie.pukeko.entity.client.PukekoRenderer;
+import net.pookie.pukeko.sounds.ModSounds;
 import org.slf4j.Logger;
 
 import com.mojang.logging.LogUtils;
@@ -45,9 +46,11 @@ import javax.swing.text.html.parser.Entity;
 // TO-DO
 
 // * Add Spawn egg
-// * Add Sounds
+// * Add hurt sounds
 // * Add Drops
 // * Add Variants
+// * Add french villager
+// * Make pukeko flee the french
 
 @Mod(Pukeko.MODID)
 public class Pukeko {
@@ -65,9 +68,12 @@ public class Pukeko {
         // Do not add this line if there are no @SubscribeEvent-annotated functions in this class, like onServerStarting() below.
         NeoForge.EVENT_BUS.register(this);
 
+        /* REGISTRY */
 
+        ModSounds.register(modEventBus); // Register sounds
         ModEntities.register(modEventBus); // Register entities
 
+        /* REGISTRY */
 
         // Register the item to a creative tab
         modEventBus.addListener(this::addCreative);

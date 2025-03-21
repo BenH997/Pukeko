@@ -1,0 +1,26 @@
+{
+  "pukeko_ambient_1": {
+    "subtitle": "sounds.pukekomod.pukeko_ambient_1",
+    "sounds": [
+      "pukekomod:pukeko_ambient_1"
+    ]
+  },
+  "pukeko_ambient_2": {
+    "subtitle": "sounds.pukekomod.pukeko_ambient_2",
+    "sounds": [
+      "pukekomod:pukeko_ambient_2"
+    ]
+  },
+  "pukeko_ambient_3": {
+    "subtitle": "sounds.pukekomod.pukeko_ambient_3",
+    "sounds": [
+      "pukekomod:pukeko_ambient_3"
+    ]
+  },
+  "pukeko_death": {
+    "subtitle": "sounds.pukekomod.pukeko_death",
+    "sounds": [
+      "pukekomod:pukeko_death"
+    ]
+  }
+}
