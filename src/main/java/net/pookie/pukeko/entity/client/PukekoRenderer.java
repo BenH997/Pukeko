@@ -10,7 +10,7 @@ import net.pookie.pukeko.entity.custom.PukekoEntity;
 
 public class PukekoRenderer extends MobRenderer<PukekoEntity, PukekoModel<PukekoEntity>> {
     public PukekoRenderer(EntityRendererProvider.Context context) {
-        super(context, new PukekoModel<>(context.bakeLayer(PukekoModel.LAYER_LOCATION)), 0.75f);
+        super(context, new PukekoModel<>(context.bakeLayer(PukekoModel.LAYER_LOCATION)), 0.55f);
     }
 
     @Override

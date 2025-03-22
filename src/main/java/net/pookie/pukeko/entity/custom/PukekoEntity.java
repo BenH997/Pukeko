@@ -96,6 +96,10 @@ public class PukekoEntity extends Animal {
     @Override
     protected @Nullable SoundEvent getAmbientSound() {
 
+        if (this.isBaby()) {
+            return ModSounds.PUKEKO_AMBIENT_3.get();
+        }
+
         // Play random ambient sound
         Random rand = new Random();
         int randomNumber = rand.nextInt(3);
@@ -112,7 +116,16 @@ public class PukekoEntity extends Animal {
     // Implement hurt sound
     @Override
     protected @Nullable SoundEvent getHurtSound(DamageSource damageSource) {
-        return SoundEvents.SHULKER_HURT; // Change later lmao
+        Random random = new Random();
+        int randomNumber = random.nextInt(3);
+
+        if (randomNumber == 0) {
+            return ModSounds.PUKEKO_HURT_1.get();
+        } else if (randomNumber == 1) {
+            return ModSounds.PUKEKO_HURT_2.get();
+        } else {
+            return ModSounds.PUKEKO_HURT_3.get();
+        }
     }
 
     @Override

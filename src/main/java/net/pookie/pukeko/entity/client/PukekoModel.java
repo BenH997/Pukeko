@@ -35,17 +35,17 @@ public class PukekoModel<T extends PukekoEntity> extends HierarchicalModel<T> {
         MeshDefinition meshdefinition = new MeshDefinition();
         PartDefinition partdefinition = meshdefinition.getRoot();
 
-        PartDefinition WholePukeko = partdefinition.addOrReplaceChild("WholePukeko", CubeListBuilder.create().texOffs(0, 0).addBox(-9.0F, -15.0F, -3.0F, 13.0F, 5.0F, 6.0F, new CubeDeformation(0.0F)), PartPose.offsetAndRotation(1.0F, 24.0F, 0.0F, 0.0F, -1.5708F, 0.0F));
+        PartDefinition WholePukeko = partdefinition.addOrReplaceChild("WholePukeko", CubeListBuilder.create().texOffs(6, 2).addBox(-5.0F, -13.0F, -2.0F, 9.0F, 4.0F, 4.0F, new CubeDeformation(0.0F)), PartPose.offsetAndRotation(0.0F, 24.0F, 0.0F, 0.0F, -1.5708F, 0.0F));
 
-        PartDefinition Foot = WholePukeko.addOrReplaceChild("Foot", CubeListBuilder.create().texOffs(24, 11).addBox(-11.0F, 8.0F, -1.0F, 10.0F, 2.0F, 2.0F, new CubeDeformation(0.0F))
-                .texOffs(24, 15).addBox(-1.0F, 0.0F, -1.0F, 2.0F, 10.0F, 2.0F, new CubeDeformation(0.0F)), PartPose.offset(0.0F, -10.0F, 0.0F));
+        PartDefinition Foot = WholePukeko.addOrReplaceChild("Foot", CubeListBuilder.create().texOffs(28, 11).addBox(-7.0F, 7.0F, -1.0F, 6.0F, 2.0F, 2.0F, new CubeDeformation(0.0F))
+                .texOffs(24, 15).addBox(-1.0F, 0.0F, -1.0F, 2.0F, 9.0F, 2.0F, new CubeDeformation(0.0F)), PartPose.offset(0.0F, -9.0F, 0.0F));
 
         PartDefinition Head = WholePukeko.addOrReplaceChild("Head", CubeListBuilder.create().texOffs(24, 27).addBox(-2.0F, -1.0F, -1.0F, 2.0F, 2.0F, 2.0F, new CubeDeformation(0.0F))
-                .texOffs(24, 31).addBox(-3.0F, 0.0F, -1.0F, 1.0F, 1.0F, 2.0F, new CubeDeformation(0.0F)), PartPose.offset(-9.0F, -14.0F, 0.0F));
+                .texOffs(24, 31).addBox(-3.0F, 0.0F, -1.0F, 1.0F, 1.0F, 2.0F, new CubeDeformation(0.0F)), PartPose.offset(-5.0F, -12.0F, 0.0F));
 
-        PartDefinition LeftToe = WholePukeko.addOrReplaceChild("LeftToe", CubeListBuilder.create().texOffs(0, 23).addBox(-1.0F, -1.0F, -10.0F, 2.0F, 2.0F, 10.0F, new CubeDeformation(0.0F)), PartPose.offset(0.0F, -1.0F, -1.0F));
+        PartDefinition LeftToe = WholePukeko.addOrReplaceChild("LeftToe", CubeListBuilder.create().texOffs(4, 27).addBox(-1.0F, -1.0F, -6.0F, 2.0F, 2.0F, 6.0F, new CubeDeformation(0.0F)), PartPose.offset(0.0F, -1.0F, -1.0F));
 
-        PartDefinition RightToe = WholePukeko.addOrReplaceChild("RightToe", CubeListBuilder.create().texOffs(0, 11).addBox(-1.0F, -1.0F, 0.0F, 2.0F, 2.0F, 10.0F, new CubeDeformation(0.0F)), PartPose.offset(0.0F, -1.0F, 1.0F));
+        PartDefinition RightToe = WholePukeko.addOrReplaceChild("RightToe", CubeListBuilder.create().texOffs(4, 15).addBox(-1.0F, -1.0F, 0.0F, 2.0F, 2.0F, 6.0F, new CubeDeformation(0.0F)), PartPose.offset(0.0F, -1.0F, 1.0F));
 
         return LayerDefinition.create(meshdefinition, 64, 64);
     }
