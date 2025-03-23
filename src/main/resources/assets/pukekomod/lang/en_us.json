@@ -1,5 +1,7 @@
 {
   "item.pukekomod.pukeko_spawn_egg": "Pukeko Spawn Egg",
+  "item.pukekomod.french_spawn_egg": "French Spawn Egg",
 
-  "entity.mccourse.pukeko": "Pukeko"
+  "entity.mccourse.pukeko": "Pukeko",
+  "entity.mccourse.french": "French Person"
 }

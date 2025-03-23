@@ -17,6 +17,10 @@ public class ModItems {
             () -> new DeferredSpawnEggItem(ModEntities.PUKEKO, 0x5e5e5e, 0xe08c9c,
                     new Item.Properties()));
 
+    public static final DeferredItem<Item> FRENCH_SPAWN_EGG = ITEMS.register("french_spawn_egg",
+            () -> new DeferredSpawnEggItem(ModEntities.FRENCH, 0x000000, 0xFFFFFF, // Placeholder colors
+                    new Item.Properties()));
+
     public static void register(IEventBus eventBus) {
         ITEMS.register(eventBus);
     }

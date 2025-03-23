@@ -5,6 +5,7 @@ import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.pookie.pukeko.entity.ModEntities;
+import net.pookie.pukeko.entity.client.FrenchRenderer;
 import net.pookie.pukeko.entity.client.PukekoRenderer;
 import net.pookie.pukeko.sounds.ModSounds;
 import net.pookie.pukeko.items.ModItems;
@@ -75,6 +76,10 @@ public class Pukeko {
         if (event.getTabKey() == CreativeModeTabs.SPAWN_EGGS) {
             event.accept(ModItems.PUKEKO_SPAWN_EGG);
         }
+
+        if (event.getTabKey() == CreativeModeTabs.SPAWN_EGGS) {
+            event.accept(ModItems.FRENCH_SPAWN_EGG);
+        }
     }
 
     // You can use SubscribeEvent and let the Event Bus discover methods to call
@@ -90,6 +95,7 @@ public class Pukeko {
         @SubscribeEvent
         public static void onClientSetup(FMLClientSetupEvent event) {
             EntityRenderers.register(ModEntities.PUKEKO.get(), PukekoRenderer::new);
+            EntityRenderers.register(ModEntities.FRENCH.get(), FrenchRenderer::new);
         }
     }
 }

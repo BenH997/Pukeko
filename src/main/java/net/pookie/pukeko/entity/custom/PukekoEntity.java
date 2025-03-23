@@ -52,7 +52,7 @@ public class PukekoEntity extends Animal {
         this.goalSelector.addGoal(7, new RandomLookAroundGoal(this));
 
         // Avoid the french
-        this.goalSelector.addGoal(3, new AvoidEntityGoal<>(this, Villager.class, 6.0F, 5.0, 5.2));
+        this.goalSelector.addGoal(3, new AvoidEntityGoal<>(this, FrenchEntity.class/*Villager.class*/, 6.0F, 5.0, 5.2));
     }
 
     public static AttributeSupplier.Builder createAttributes() {
