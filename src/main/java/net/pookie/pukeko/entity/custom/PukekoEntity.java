@@ -3,6 +3,8 @@ package net.pookie.pukeko.entity.custom;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.AgeableMob;
 import net.minecraft.world.entity.AnimationState;
@@ -16,10 +18,14 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.gameevent.GameEvent;
+import net.minecraft.world.phys.Vec3;
 import net.pookie.pukeko.entity.ModEntities;
+import net.pookie.pukeko.items.ModItems;
 import net.pookie.pukeko.sounds.ModSounds;
 import org.jetbrains.annotations.Nullable;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.entity.monster.Ghast;
 
 import java.util.Random;
 
@@ -28,6 +34,12 @@ public class PukekoEntity extends Animal {
     // Basic Animation stuff
     public final AnimationState idleAnimationState = new AnimationState();
     private int idleAnimationTimeout = 0;
+
+    // Egg lay counter
+    public int eggTime = this.random.nextInt(6000) + 6000;
+
+    // If modified by name
+    public boolean nameModified = false;
 
     public PukekoEntity(EntityType<? extends Animal> entityType, Level level) {
         super(entityType, level);
@@ -92,7 +104,8 @@ public class PukekoEntity extends Animal {
         }
     }
 
-    // Sound
+    // Sounds
+
     @Override
     protected @Nullable SoundEvent getAmbientSound() {
 
@@ -113,7 +126,6 @@ public class PukekoEntity extends Animal {
         }
     }
 
-    // Implement hurt sound
     @Override
     protected @Nullable SoundEvent getHurtSound(DamageSource damageSource) {
         Random random = new Random();
@@ -132,4 +144,47 @@ public class PukekoEntity extends Animal {
     protected @Nullable SoundEvent getDeathSound() {
         return ModSounds.PUKEKO_DEATH.get();
     }
+
+    // Pukeko updates/events
+    @Override
+    public void aiStep() {
+        super.aiStep();
+
+        // Naming events
+        if (this.hasCustomName() && this.getCustomName().getString().equalsIgnoreCase("LOBOTOMIZATION")) {
+            this.goalSelector.getAvailableGoals().clear();
+            nameModified = true;
+        }
+
+        // Reset goals after rename
+        if (nameModified && !this.getCustomName().getString().equalsIgnoreCase("LOBOTOMIZATION")) {
+            this.goalSelector.getAvailableGoals().clear();
+            registerGoals();
+            nameModified = false;
+        }
+
+        // Egg lay
+        if (!this.level().isClientSide && this.isAlive() && !this.isBaby() && --this.eggTime <= 0) {
+            this.playSound(ModSounds.PUKEKO_DEATH.get()); // Change later
+            this.spawnAtLocation(ModItems.PUKEKO_SPAWN_EGG); // Change later
+            this.gameEvent(GameEvent.ENTITY_PLACE); // Allows to be detected by skulks?!?
+            eggTime = this.random.nextInt(5000) + 5000;
+        }
+    }
+
+    // Transformation/interaction prototype
+
+//    @Override
+//    public InteractionResult interactAt(Player player, Vec3 vec, InteractionHand hand) {
+//        ItemStack Itemstack = player.getItemInHand(hand);
+//
+//        if (Itemstack.is(Items.IRON_BARS)) {
+//            this.goalSelector.getAvailableGoals().clear();
+//
+//            this.goalSelector.addGoal(0, new FloatGoal(this));
+//            this.goalSelector.addGoal(1, new SwellGoal());
+//        }
+//
+//        return super.interactAt(player, vec, hand);
+//    }
 }

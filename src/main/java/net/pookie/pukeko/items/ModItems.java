@@ -1,8 +1,6 @@
 package net.pookie.pukeko.items;
 
-import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.item.SpawnEggItem;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.common.DeferredSpawnEggItem;
 import net.neoforged.neoforge.registries.DeferredItem;
@@ -18,7 +16,7 @@ public class ModItems {
                     new Item.Properties()));
 
     public static final DeferredItem<Item> FRENCH_SPAWN_EGG = ITEMS.register("french_spawn_egg",
-            () -> new DeferredSpawnEggItem(ModEntities.FRENCH, 0x000000, 0xFFFFFF, // Placeholder colors
+            () -> new DeferredSpawnEggItem(ModEntities.FRENCH, 0x000091, 0xE1000F, // Placeholder colors
                     new Item.Properties()));
 
     public static void register(IEventBus eventBus) {
