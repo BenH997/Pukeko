@@ -2,30 +2,28 @@ package net.pookie.pukeko.entity.custom;
 
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.entity.AgeableMob;
-import net.minecraft.world.entity.AnimationState;
-import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.ai.control.FlyingMoveControl;
+import net.minecraft.world.entity.ai.control.MoveControl;
 import net.minecraft.world.entity.ai.goal.*;
+import net.minecraft.world.entity.ai.navigation.FlyingPathNavigation;
+import net.minecraft.world.entity.ai.navigation.GroundPathNavigation;
+import net.minecraft.world.entity.ai.navigation.PathNavigation;
 import net.minecraft.world.entity.animal.Animal;
-import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.gameevent.GameEvent;
-import net.minecraft.world.phys.Vec3;
 import net.pookie.pukeko.entity.ModEntities;
+import net.pookie.pukeko.entity.goals.RandomFlyGoal;
 import net.pookie.pukeko.items.ModItems;
 import net.pookie.pukeko.sounds.ModSounds;
 import org.jetbrains.annotations.Nullable;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.entity.monster.Ghast;
 
 import java.util.Random;
 
@@ -38,11 +36,13 @@ public class PukekoEntity extends Animal {
     // Egg lay counter
     public int eggTime = this.random.nextInt(6000) + 6000;
 
-    // If modified by name
-    public boolean nameModified = false;
+    public boolean canFly = false;
 
     public PukekoEntity(EntityType<? extends Animal> entityType, Level level) {
         super(entityType, level);
+
+        this.moveControl = new MoveControl(this);
+        this.navigation = new GroundPathNavigation(this, this.level());
     }
 
     // Registers goals of the pukeko
@@ -71,7 +71,13 @@ public class PukekoEntity extends Animal {
         return Animal.createLivingAttributes()
                 .add(Attributes.MAX_HEALTH, 20d)
                 .add(Attributes.MOVEMENT_SPEED, 0.25D)
-                .add(Attributes.FOLLOW_RANGE, 24D);
+                .add(Attributes.FOLLOW_RANGE, 24D)
+                .add(Attributes.FLYING_SPEED, 2D);
+    }
+
+    @Override
+    protected PathNavigation createNavigation(Level level) {
+        return new FlyingPathNavigation(this, level);
     }
 
     @Override
@@ -150,17 +156,23 @@ public class PukekoEntity extends Animal {
     public void aiStep() {
         super.aiStep();
 
-        // Naming events
-        if (this.hasCustomName() && this.getCustomName().getString().equalsIgnoreCase("LOBOTOMIZATION")) {
-            this.goalSelector.getAvailableGoals().clear();
-            nameModified = true;
+        // Flying enabling name
+        if (this.hasCustomName() && this.getCustomName().getString().equalsIgnoreCase("AVIATION")) {
+            this.moveControl = new FlyingMoveControl(this, 10, true);
+            this.navigation = new FlyingPathNavigation(this, this.level());
+            this.goalSelector.addGoal(4, new RandomFlyGoal(this));
+            this.setNoGravity(true);
+            this.canFly = true;
         }
 
         // Reset goals after rename
-        if (nameModified && !this.getCustomName().getString().equalsIgnoreCase("LOBOTOMIZATION")) {
-            this.goalSelector.getAvailableGoals().clear();
-            registerGoals();
-            nameModified = false;
+        if (canFly && !this.getCustomName().getString().equalsIgnoreCase("AVIATION")) {
+            final RandomFlyGoal flyGoal = new RandomFlyGoal(this);
+            this.goalSelector.removeGoal(flyGoal);
+            this.moveControl = new MoveControl(this);
+            this.navigation = new GroundPathNavigation(this, this.level());
+            this.setNoGravity(false);
+            this.canFly = false;
         }
 
         // Egg lay
@@ -172,19 +184,13 @@ public class PukekoEntity extends Animal {
         }
     }
 
-    // Transformation/interaction prototype
-
+    // Fix later
 //    @Override
-//    public InteractionResult interactAt(Player player, Vec3 vec, InteractionHand hand) {
-//        ItemStack Itemstack = player.getItemInHand(hand);
-//
-//        if (Itemstack.is(Items.IRON_BARS)) {
-//            this.goalSelector.getAvailableGoals().clear();
-//
-//            this.goalSelector.addGoal(0, new FloatGoal(this));
-//            this.goalSelector.addGoal(1, new SwellGoal());
-//        }
-//
-//        return super.interactAt(player, vec, hand);
+//    public boolean causeFallDamage(float fallDistance, float multiplier, DamageSource source) {
+//        return !this.canFly;
 //    }
+
+    public boolean isFlyingEnabled() {
+        return this.canFly;
+    }
 }

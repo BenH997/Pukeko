@@ -31,7 +31,7 @@ import org.spongepowered.asm.logging.ILogger;
 
 // TO-DO
 
-// * Add
+// * Add Finish flight (fix low movement, fall damage, and add animaitons and new model)
 // * Add placeable egg
 // * Make the egg hatch
 // * Make egg hatch tamed pukeko
