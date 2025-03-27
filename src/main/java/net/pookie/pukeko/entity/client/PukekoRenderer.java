@@ -15,11 +15,22 @@ public class PukekoRenderer extends MobRenderer<PukekoEntity, PukekoModel<Pukeko
 
     @Override
     public ResourceLocation getTextureLocation(PukekoEntity entity) {
-        return ResourceLocation.fromNamespaceAndPath(Pukeko.MODID, "textures/entity/pukeko/pukeko.png");
+        if (!entity.isFlyingEnabled()) {
+            return ResourceLocation.fromNamespaceAndPath(Pukeko.MODID, "textures/entity/pukeko/pukeko.png");
+        } else {
+            return ResourceLocation.fromNamespaceAndPath(Pukeko.MODID, "textures/entity/pukekoHeli/pukekoHeli.png");
+        }
+
     }
 
     @Override
     public void render(PukekoEntity entity, float entityYaw, float partialTicks, PoseStack poseStack, MultiBufferSource buffer, int packedLight) {
+        if (entity.isFlyingEnabled()) {
+            PukekoModel.render(stack, buffer, packedLight, entity, partialTicks, entityYaw);
+        } else {
+            PukekoHeliModel.render(stack, buffer, packedLight, entity, partialTicks, entityYaw);
+        }
+
         if (entity.isBaby()) {
             poseStack.scale(0.5f, 0.5f, 0.5f);
         } else {

@@ -21,10 +21,11 @@ public class RandomFlyGoal extends Goal {
 
     @Override
     public void tick() {
-        if (entity.getRandom().nextInt(80) == 0) {
+        if (entity.getRandom().nextInt(60) == 0) {
             double x = entity.getX() + (entity.getRandom().nextDouble() - 0.5) * 10;
             double y = entity.getY() + (entity.getRandom().nextDouble() - 0.5) * 10;
             double z = entity.getZ() + (entity.getRandom().nextDouble() - 0.5) * 10;
+
             entity.getMoveControl().setWantedPosition(x, y, z, 1.0);
         }
     }

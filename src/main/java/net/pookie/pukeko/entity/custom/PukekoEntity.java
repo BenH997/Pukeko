@@ -18,7 +18,9 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.gameevent.GameEvent;
+import net.minecraft.world.phys.Vec3;
 import net.pookie.pukeko.entity.ModEntities;
+import net.pookie.pukeko.entity.goals.CustomFlyingMoveControl;
 import net.pookie.pukeko.entity.goals.RandomFlyGoal;
 import net.pookie.pukeko.items.ModItems;
 import net.pookie.pukeko.sounds.ModSounds;
@@ -72,7 +74,7 @@ public class PukekoEntity extends Animal {
                 .add(Attributes.MAX_HEALTH, 20d)
                 .add(Attributes.MOVEMENT_SPEED, 0.25D)
                 .add(Attributes.FOLLOW_RANGE, 24D)
-                .add(Attributes.FLYING_SPEED, 2D);
+                .add(Attributes.FLYING_SPEED, 0.25D);
     }
 
     @Override
@@ -157,20 +159,32 @@ public class PukekoEntity extends Animal {
         super.aiStep();
 
         // Flying enabling name
-        if (this.hasCustomName() && this.getCustomName().getString().equalsIgnoreCase("AVIATION")) {
-            this.moveControl = new FlyingMoveControl(this, 10, true);
+        if (this.hasCustomName() && !this.canFly && this.getCustomName().getString().equalsIgnoreCase("AVIATION")) {
+            this.moveControl = new CustomFlyingMoveControl(this);
             this.navigation = new FlyingPathNavigation(this, this.level());
-            this.goalSelector.addGoal(4, new RandomFlyGoal(this));
+
+            this.goalSelector.addGoal(0, new RandomFlyGoal(this));
+
+            final WaterAvoidingRandomStrollGoal walkGoal = new WaterAvoidingRandomStrollGoal(this, 1.0);
+            this.goalSelector.removeGoal(walkGoal);
+
             this.setNoGravity(true);
             this.canFly = true;
+
+            this.getMoveControl().setWantedPosition(this.getX(), this.getY() + 2, this.getZ(), 1.0);
+            this.setDeltaMovement(0, 0 , 0);
         }
 
         // Reset goals after rename
         if (canFly && !this.getCustomName().getString().equalsIgnoreCase("AVIATION")) {
+            this.moveControl = new CustomFlyingMoveControl(this);
+            this.navigation = new GroundPathNavigation(this, this.level());
+
             final RandomFlyGoal flyGoal = new RandomFlyGoal(this);
             this.goalSelector.removeGoal(flyGoal);
-            this.moveControl = new MoveControl(this);
-            this.navigation = new GroundPathNavigation(this, this.level());
+
+            this.goalSelector.addGoal(5, new WaterAvoidingRandomStrollGoal(this, 1.0));
+
             this.setNoGravity(false);
             this.canFly = false;
         }
@@ -180,15 +194,15 @@ public class PukekoEntity extends Animal {
             this.playSound(ModSounds.PUKEKO_DEATH.get()); // Change later
             this.spawnAtLocation(ModItems.PUKEKO_SPAWN_EGG); // Change later
             this.gameEvent(GameEvent.ENTITY_PLACE); // Allows to be detected by skulks?!?
-            eggTime = this.random.nextInt(5000) + 5000;
+            eggTime = this.random.nextInt(6000) + 6000;
         }
     }
 
     // Fix later
-//    @Override
-//    public boolean causeFallDamage(float fallDistance, float multiplier, DamageSource source) {
-//        return !this.canFly;
-//    }
+    @Override
+    public boolean causeFallDamage(float fallDistance, float multiplier, DamageSource source) {
+        return (!this.isFlyingEnabled()) && super.causeFallDamage(fallDistance, multiplier, source);
+    }
 
     public boolean isFlyingEnabled() {
         return this.canFly;
