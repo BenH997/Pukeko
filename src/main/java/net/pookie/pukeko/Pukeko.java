@@ -1,9 +1,7 @@
 package net.pookie.pukeko;
 
 import net.minecraft.client.renderer.entity.EntityRenderers;
-import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.CreativeModeTabs;
-import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.pookie.pukeko.entity.ModEntities;
 import net.pookie.pukeko.entity.client.FrenchRenderer;
 import net.pookie.pukeko.entity.client.PukekoRenderer;
@@ -25,16 +23,16 @@ import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.event.server.ServerStartingEvent;
-import org.spongepowered.asm.logging.ILogger;
 
 // Build: ./gradlew build
 
-// TO-DO
+// TODO
+
+// * FINISH THE RENDERER SWITCH
 
 // * Add funny name ANNIHILATION
     // * Make bird super aggressive
     // * Like johnny
-// * Add Finish flight (add animaitons and new model)
 // * Add placeable egg
 // * Make the egg hatch
 // * Make egg hatch tamed pukeko

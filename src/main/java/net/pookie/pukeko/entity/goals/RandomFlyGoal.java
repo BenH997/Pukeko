@@ -26,7 +26,7 @@ public class RandomFlyGoal extends Goal {
             double y = entity.getY() + (entity.getRandom().nextDouble() - 0.5) * 10;
             double z = entity.getZ() + (entity.getRandom().nextDouble() - 0.5) * 10;
 
-            entity.getMoveControl().setWantedPosition(x, y, z, 1.0);
+            entity.getMoveControl().setWantedPosition(x, y, z, 0.25);
         }
     }
 }

@@ -24,7 +24,7 @@ public class CustomFlyingMoveControl extends FlyingMoveControl {
             double targetZ = moveControl.getWantedZ();
 
             Vec3 motion = entity.getDeltaMovement();
-            double acceleration = 0.1; // Adjust acceleration for smoother movement
+            double acceleration = 0.001;
 
             // Move towards the target position
             entity.setDeltaMovement(motion.add(
@@ -34,7 +34,7 @@ public class CustomFlyingMoveControl extends FlyingMoveControl {
             ));
 
             // Reduce air drag to maintain smooth movement
-            entity.setDeltaMovement(entity.getDeltaMovement().multiply(1.02, 1.0, 1.02));
+            entity.setDeltaMovement(entity.getDeltaMovement().multiply(1.00, 1.0, 1.00));
         }
     }
 }

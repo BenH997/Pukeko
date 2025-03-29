@@ -6,7 +6,6 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
-import net.minecraft.world.entity.ai.control.FlyingMoveControl;
 import net.minecraft.world.entity.ai.control.MoveControl;
 import net.minecraft.world.entity.ai.goal.*;
 import net.minecraft.world.entity.ai.navigation.FlyingPathNavigation;
@@ -18,7 +17,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.gameevent.GameEvent;
-import net.minecraft.world.phys.Vec3;
 import net.pookie.pukeko.entity.ModEntities;
 import net.pookie.pukeko.entity.goals.CustomFlyingMoveControl;
 import net.pookie.pukeko.entity.goals.RandomFlyGoal;
@@ -31,9 +29,15 @@ import java.util.Random;
 
 public class PukekoEntity extends Animal {
 
-    // Basic Animation stuff
-    public final AnimationState idleAnimationState = new AnimationState();
-    private int idleAnimationTimeout = 0;
+    // Transform Animation stuff
+    public final AnimationState transformAnimationState = new AnimationState();
+    private int transformAnimationTicks = 0;
+    private boolean transformAnimationPlaying = false;
+
+    // Flying Animation stuff
+    public final AnimationState flyingAnimationState = new AnimationState();
+    private int flyingAnimationTicks = 0;
+    private boolean flyingAnimationPlaying = false;
 
     // Egg lay counter
     public int eggTime = this.random.nextInt(6000) + 6000;
@@ -66,7 +70,7 @@ public class PukekoEntity extends Animal {
         this.goalSelector.addGoal(7, new RandomLookAroundGoal(this));
 
         // Avoid the french
-        this.goalSelector.addGoal(3, new AvoidEntityGoal<>(this, FrenchEntity.class/*Villager.class*/, 6.0F, 5.0, 5.2));
+        this.goalSelector.addGoal(3, new AvoidEntityGoal<>(this, FrenchEntity.class, 6.0F, 5.0, 5.2));
     }
 
     public static AttributeSupplier.Builder createAttributes() {
@@ -93,27 +97,24 @@ public class PukekoEntity extends Animal {
         return ModEntities.PUKEKO.get().create(level);
     }
 
- // Uncomment if you want an idle animation
-    private void setupAnimationsStates() {
-        if(this.idleAnimationTimeout <= 0) {
-            this.idleAnimationTimeout = 80;
-            this.idleAnimationState.start(this.tickCount);
-        } else {
-            --this.idleAnimationTimeout;
-        }
-    }
-
     @Override
     public void tick() {
         super.tick();
 
+        if (this.isTransformAnimationPlaying() && this.transformAnimationTicks <= 0) {
+            this.transformAnimationTicks = -1;
+            this.transformAnimationPlaying = false;
+        } else if (this.isTransformAnimationPlaying() && this.transformAnimationTicks >= 1) {
+            this.transformAnimationTicks--;
+        }
+
         if (this.level().isClientSide()) {
-            this.setupAnimationsStates();
+            this.transformAnimationState.animateWhen(this.isTransformAnimationPlaying(), this.tickCount);
+            this.flyingAnimationState.animateWhen(!this.isTransformAnimationPlaying() && this.canFly, this.tickCount);
         }
     }
 
     // Sounds
-
     @Override
     protected @Nullable SoundEvent getAmbientSound() {
 
@@ -163,14 +164,13 @@ public class PukekoEntity extends Animal {
             this.moveControl = new CustomFlyingMoveControl(this);
             this.navigation = new FlyingPathNavigation(this, this.level());
 
+            this.goalSelector.removeGoal(new WaterAvoidingRandomStrollGoal(this, 1.0));
+
+            this.startTransformationAnimation();
+
             this.goalSelector.addGoal(0, new RandomFlyGoal(this));
-
-            final WaterAvoidingRandomStrollGoal walkGoal = new WaterAvoidingRandomStrollGoal(this, 1.0);
-            this.goalSelector.removeGoal(walkGoal);
-
             this.setNoGravity(true);
             this.canFly = true;
-
             this.getMoveControl().setWantedPosition(this.getX(), this.getY() + 2, this.getZ(), 1.0);
             this.setDeltaMovement(0, 0 , 0);
         }
@@ -180,8 +180,7 @@ public class PukekoEntity extends Animal {
             this.moveControl = new CustomFlyingMoveControl(this);
             this.navigation = new GroundPathNavigation(this, this.level());
 
-            final RandomFlyGoal flyGoal = new RandomFlyGoal(this);
-            this.goalSelector.removeGoal(flyGoal);
+            this.goalSelector.removeGoal(new RandomFlyGoal(this));
 
             this.goalSelector.addGoal(5, new WaterAvoidingRandomStrollGoal(this, 1.0));
 
@@ -198,7 +197,7 @@ public class PukekoEntity extends Animal {
         }
     }
 
-    // Fix later
+    // More Attributes
     @Override
     public boolean causeFallDamage(float fallDistance, float multiplier, DamageSource source) {
         return (!this.isFlyingEnabled()) && super.causeFallDamage(fallDistance, multiplier, source);
@@ -206,5 +205,17 @@ public class PukekoEntity extends Animal {
 
     public boolean isFlyingEnabled() {
         return this.canFly;
+    }
+
+    // Transform Animation
+    public void startTransformationAnimation() {
+        if (!transformAnimationPlaying) {
+            this.transformAnimationPlaying = true;
+            this.transformAnimationTicks = 36;
+        }
+    }
+
+    public boolean isTransformAnimationPlaying() {
+        return this.transformAnimationPlaying;
     }
 }
