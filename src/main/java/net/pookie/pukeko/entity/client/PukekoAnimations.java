@@ -7,8 +7,6 @@ import net.minecraft.client.animation.KeyframeAnimations;
 
 public class PukekoAnimations {
 
-
-
     public static final AnimationDefinition ANIM_PUKEKO_WALK = AnimationDefinition.Builder.withLength(0.5f).looping()
             .addAnimation("Foot",
                     new AnimationChannel(AnimationChannel.Targets.POSITION,
@@ -43,7 +41,7 @@ public class PukekoAnimations {
                             new Keyframe(0f, KeyframeAnimations.posVec(0f, 0f, 0f),
                                     AnimationChannel.Interpolations.LINEAR))).build();
     public static final AnimationDefinition IDLE = AnimationDefinition.Builder.withLength(1f).looping().build();
-    public static final AnimationDefinition ANIM_PUKEKO_TRANSFORM = AnimationDefinition.Builder.withLength(1.79167f)
+    public static final AnimationDefinition ANIM_PUKEKO_TRANSFORM = AnimationDefinition.Builder.withLength(2f)
             .addAnimation("TailHidden",
                     new AnimationChannel(AnimationChannel.Targets.POSITION,
                             new Keyframe(1f, KeyframeAnimations.posVec(0f, 0f, 0f),
@@ -77,6 +75,12 @@ public class PukekoAnimations {
                             new Keyframe(1f, KeyframeAnimations.degreeVec(0f, 0f, 0f),
                                     AnimationChannel.Interpolations.LINEAR),
                             new Keyframe(1.5f, KeyframeAnimations.degreeVec(0f, 0f, 90f),
+                                    AnimationChannel.Interpolations.CATMULLROM)))
+            .addAnimation("WholePukeko",
+                    new AnimationChannel(AnimationChannel.Targets.POSITION,
+                            new Keyframe(0f, KeyframeAnimations.posVec(0f, 0f, 0f),
+                                    AnimationChannel.Interpolations.LINEAR),
+                            new Keyframe(1.5f, KeyframeAnimations.posVec(0f, -9f, 0f),
                                     AnimationChannel.Interpolations.CATMULLROM))).build();
 
     public static final AnimationDefinition ANIM_PUKEKO_FLYING = AnimationDefinition.Builder.withLength(1f).looping()
@@ -107,5 +111,9 @@ public class PukekoAnimations {
                             new Keyframe(0f, KeyframeAnimations.degreeVec(0f, 0f, 0f),
                                     AnimationChannel.Interpolations.LINEAR),
                             new Keyframe(1f, KeyframeAnimations.degreeVec(0f, 0f, 3600f),
+                                    AnimationChannel.Interpolations.LINEAR)))
+            .addAnimation("WholePukeko",
+                    new AnimationChannel(AnimationChannel.Targets.POSITION,
+                            new Keyframe(0f, KeyframeAnimations.posVec(0f, -9f, 0f),
                                     AnimationChannel.Interpolations.LINEAR))).build();
 }

@@ -28,8 +28,6 @@ import net.neoforged.neoforge.event.server.ServerStartingEvent;
 
 // TODO
 
-// * FINISH THE RENDERER SWITCH
-
 // * Add funny name ANNIHILATION
     // * Make bird super aggressive
     // * Like johnny

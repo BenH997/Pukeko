@@ -171,8 +171,7 @@ public class PukekoEntity extends Animal {
             this.goalSelector.addGoal(0, new RandomFlyGoal(this));
             this.setNoGravity(true);
             this.canFly = true;
-            this.getMoveControl().setWantedPosition(this.getX(), this.getY() + 2, this.getZ(), 1.0);
-            this.setDeltaMovement(0, 0 , 0);
+            this.getMoveControl().setWantedPosition(this.getX(), this.getY() + 0.5, this.getZ(), 0.75);
         }
 
         // Reset goals after rename
