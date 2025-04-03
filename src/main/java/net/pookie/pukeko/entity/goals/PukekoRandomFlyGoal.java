@@ -6,10 +6,10 @@ import net.pookie.pukeko.entity.custom.PukekoEntity;
 
 import java.util.EnumSet;
 
-public class RandomFlyGoal extends Goal {
+public class PukekoRandomFlyGoal extends Goal {
     private PukekoEntity entity;
 
-    public RandomFlyGoal(PukekoEntity entity) {
+    public PukekoRandomFlyGoal(PukekoEntity entity) {
         this.entity = entity;
         this.setFlags(EnumSet.of(Goal.Flag.MOVE));
     }

@@ -3,11 +3,14 @@ package net.pookie.pukeko.entity.custom;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.control.MoveControl;
 import net.minecraft.world.entity.ai.goal.*;
+import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
 import net.minecraft.world.entity.ai.navigation.FlyingPathNavigation;
 import net.minecraft.world.entity.ai.navigation.GroundPathNavigation;
 import net.minecraft.world.entity.ai.navigation.PathNavigation;
@@ -16,11 +19,9 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.gameevent.GameEvent;
 import net.pookie.pukeko.entity.ModEntities;
-import net.pookie.pukeko.entity.goals.CustomFlyingMoveControl;
-import net.pookie.pukeko.entity.goals.RandomFlyGoal;
-import net.pookie.pukeko.items.ModItems;
+import net.pookie.pukeko.entity.goals.PukekoFlyingMoveControl;
+import net.pookie.pukeko.entity.goals.PukekoRandomFlyGoal;
 import net.pookie.pukeko.sounds.ModSounds;
 import org.jetbrains.annotations.Nullable;
 import net.minecraft.world.item.Items;
@@ -29,20 +30,28 @@ import java.util.Random;
 
 public class PukekoEntity extends Animal {
 
-    // Transform Animation stuff
+    // Transform Animation
     public final AnimationState transformAnimationState = new AnimationState();
     private int transformAnimationTicks = 0;
     private boolean transformAnimationPlaying = false;
 
-    // Flying Animation stuff
-    public final AnimationState flyingAnimationState = new AnimationState();
-    private int flyingAnimationTicks = 0;
-    private boolean flyingAnimationPlaying = false;
+    // Untransform Animation
+    public final AnimationState untransformAnimationState = new AnimationState();
+    private int untransformAnimationTicks = 0;
+    private boolean untransformAnimationPlaying = false;
 
-    // Egg lay counter
-    public int eggTime = this.random.nextInt(6000) + 6000;
+    // Attack Animation
+    public final AnimationState attackAnimationSate = new AnimationState();
+    private int attackAnimationTicks = 0;
+    private boolean attackAnimationPlaying = false;
+
+    // Flying Animation
+    public final AnimationState flyingAnimationState = new AnimationState();
+
+    private String entityName = null;
 
     public boolean canFly = false;
+    private boolean annihilationActive = false;
 
     public PukekoEntity(EntityType<? extends Animal> entityType, Level level) {
         super(entityType, level);
@@ -54,31 +63,43 @@ public class PukekoEntity extends Animal {
     // Registers goals of the pukeko
     @Override
     protected void registerGoals() {
-
-        // Keep head above water
         this.goalSelector.addGoal(0, new FloatGoal(this));
-        this.goalSelector.addGoal(1, new PanicGoal(this, 3.0));
+        this.goalSelector.addGoal(2, new AvoidEntityGoal<>(this, FrenchEntity.class, 6.0F, 5.0, 5.2));
+        this.goalSelector.addGoal(4, new BreedGoal(this, 1.0));
+        this.goalSelector.addGoal(5, new TemptGoal(this, 1.25, Ingredient.of(Items.BAMBOO), false)); // Sketchy
+        this.goalSelector.addGoal(6, new FollowParentGoal(this, 1.25));
+        this.goalSelector.addGoal(7, new WaterAvoidingRandomStrollGoal(this, 1.0));this.goalSelector.addGoal(1, new PanicGoal(this, 3.0));
+        this.goalSelector.addGoal(8, new LookAtPlayerGoal(this, Player.class, 10.0F));
+        this.goalSelector.addGoal(9, new RandomLookAroundGoal(this));
+    }
 
-        // Breeding/bb stuff
-        this.goalSelector.addGoal(2, new BreedGoal(this, 1.0));
-        this.goalSelector.addGoal(3, new TemptGoal(this, 1.25, Ingredient.of(Items.BAMBOO), false)); // Sketchy
-        this.goalSelector.addGoal(4, new FollowParentGoal(this, 1.25));
+    public class PukekoAttackGoal extends NearestAttackableTargetGoal<LivingEntity> {
+        public PukekoAttackGoal(PukekoEntity pukeko) {
+            super(pukeko, LivingEntity.class, 0, true, true,
+                    entity -> !(entity instanceof PukekoEntity));
+        }
 
-        // Random looking and movement
-        this.goalSelector.addGoal(5, new WaterAvoidingRandomStrollGoal(this, 1.0));
-        this.goalSelector.addGoal(6, new LookAtPlayerGoal(this, Player.class, 10.0F));
-        this.goalSelector.addGoal(7, new RandomLookAroundGoal(this));
+        @Override
+        public boolean canUse() {
+            return ((PukekoEntity) this.mob).annihilationActive && super.canUse();
+        }
 
-        // Avoid the french
-        this.goalSelector.addGoal(3, new AvoidEntityGoal<>(this, FrenchEntity.class, 6.0F, 5.0, 5.2));
+        @Override
+        public void start() {
+            super.start();
+            this.mob.setNoActionTime(0);
+
+            PukekoEntity.this.startAttackAnimation();
+        }
     }
 
     public static AttributeSupplier.Builder createAttributes() {
         return Animal.createLivingAttributes()
                 .add(Attributes.MAX_HEALTH, 20d)
                 .add(Attributes.MOVEMENT_SPEED, 0.25D)
-                .add(Attributes.FOLLOW_RANGE, 24D)
-                .add(Attributes.FLYING_SPEED, 0.25D);
+                .add(Attributes.FOLLOW_RANGE, 32.0D)
+                .add(Attributes.FLYING_SPEED, 0.5D)
+                .add(Attributes.ATTACK_DAMAGE, 10.0D);
     }
 
     @Override
@@ -101,6 +122,7 @@ public class PukekoEntity extends Animal {
     public void tick() {
         super.tick();
 
+        // Animations
         if (this.isTransformAnimationPlaying() && this.transformAnimationTicks <= 0) {
             this.transformAnimationTicks = -1;
             this.transformAnimationPlaying = false;
@@ -108,9 +130,103 @@ public class PukekoEntity extends Animal {
             this.transformAnimationTicks--;
         }
 
+        if (this.isUntransformAnimationPlaying() && this.untransformAnimationTicks <= 0) {
+            this.untransformAnimationTicks = -1;
+            this.untransformAnimationPlaying = false;
+        } else if (this.isUntransformAnimationPlaying() && this.untransformAnimationTicks >= 1) {
+            this.untransformAnimationTicks--;
+        }
+
+        if (this.isUntransformAnimationPlaying() && this.attackAnimationTicks <= 0) {
+            this.attackAnimationTicks = -1;
+            this.attackAnimationPlaying = false;
+        } else if (this.isUntransformAnimationPlaying() && this.attackAnimationTicks >= 1) {
+            this.attackAnimationTicks--;
+        }
+
+        // Animation conditions
         if (this.level().isClientSide()) {
             this.transformAnimationState.animateWhen(this.isTransformAnimationPlaying(), this.tickCount);
             this.flyingAnimationState.animateWhen(!this.isTransformAnimationPlaying() && this.canFly, this.tickCount);
+            this.untransformAnimationState.animateWhen(this.isUntransformAnimationPlaying(), this.tickCount);
+            this.attackAnimationSate.animateWhen(this.attackAnimationPlaying, this.tickCount);
+        }
+
+        // Get Entity name
+        if (this.hasCustomName()) {
+            entityName = this.getCustomName().getString();
+        }
+
+        // Flying enabling name
+        if (this.hasCustomName() && !this.canFly && entityName.equals("AVIATION")) {
+            this.canFly = true;
+            this.moveControl = new PukekoFlyingMoveControl(this); // Fix this
+            this.navigation = new FlyingPathNavigation(this, this.level());
+
+            this.goalSelector.removeGoal(new WaterAvoidingRandomStrollGoal(this, 1.0));
+            this.goalSelector.removeGoal(new PanicGoal(this, 2.0));
+            this.goalSelector.addGoal(1, new PukekoRandomFlyGoal(this));
+
+            this.startTransformationAnimation();
+
+            this.getMoveControl().setWantedPosition(this.getX(), this.getY() + 1, this.getZ(), 0.05);
+            this.setNoGravity(true);
+
+            if (annihilationActive) {
+                annihilationActive = false;
+                this.targetSelector.removeGoal(new PukekoAttackGoal(this));
+                this.goalSelector.removeGoal(new MeleeAttackGoal(this, 1.2D, true));
+                this.setTarget(null);
+            }
+        }
+
+        // ANNIHILATION enabling name
+        if (this.hasCustomName() && !this.annihilationActive && this.entityName.equals("ANNIHILATION")) {
+            this.annihilationActive = true;
+            this.moveControl = new MoveControl(this);
+            this.navigation = new GroundPathNavigation(this, this.level());
+            this.targetSelector.addGoal(1, new PukekoAttackGoal(this));
+            this.goalSelector.addGoal(2, new MeleeAttackGoal(this, 2D, true));
+
+            if (canFly) {
+                canFly = false;
+                this.moveControl = new MoveControl(this);
+                this.navigation = new GroundPathNavigation(this, this.level());
+                this.goalSelector.addGoal(7, new WaterAvoidingRandomStrollGoal(this, 1.0));
+                this.goalSelector.addGoal(1, new PanicGoal(this, 2.0));
+                this.goalSelector.removeGoal(new PukekoRandomFlyGoal(this));
+
+                this.startUntransformationAnimation();
+
+                this.setNoGravity(false);
+                this.addEffect(new MobEffectInstance(MobEffects.SLOW_FALLING, 100, 1));
+            }
+        }
+
+        // Reset goals after rename
+        if (canFly && !this.entityName.equals("AVIATION")) {
+            this.canFly = false;
+            this.moveControl = new MoveControl(this);
+            this.navigation = new GroundPathNavigation(this, this.level());
+
+            this.goalSelector.removeGoal(new PukekoRandomFlyGoal(this));
+
+            this.goalSelector.addGoal(7, new WaterAvoidingRandomStrollGoal(this, 1.0));
+            this.goalSelector.addGoal(1, new PanicGoal(this, 3.0));
+
+            this.startUntransformationAnimation();
+
+            this.setNoGravity(false);
+            this.addEffect(new MobEffectInstance(MobEffects.SLOW_FALLING, 100, 1));
+        }
+
+        // Reset Annihilation
+        if (annihilationActive && !this.entityName.equals("ANNIHILATION")) {
+            this.annihilationActive = false;
+            this.targetSelector.removeGoal(new PukekoAttackGoal(this));
+            this.goalSelector.removeGoal(new MeleeAttackGoal(this, 2D, true));
+            this.setTarget(null);
+
         }
     }
 
@@ -154,48 +270,6 @@ public class PukekoEntity extends Animal {
         return ModSounds.PUKEKO_DEATH.get();
     }
 
-    // Pukeko updates/events
-    @Override
-    public void aiStep() {
-        super.aiStep();
-
-        // Flying enabling name
-        if (this.hasCustomName() && !this.canFly && this.getCustomName().getString().equalsIgnoreCase("AVIATION")) {
-            this.moveControl = new CustomFlyingMoveControl(this);
-            this.navigation = new FlyingPathNavigation(this, this.level());
-
-            this.goalSelector.removeGoal(new WaterAvoidingRandomStrollGoal(this, 1.0));
-
-            this.startTransformationAnimation();
-
-            this.goalSelector.addGoal(0, new RandomFlyGoal(this));
-            this.setNoGravity(true);
-            this.canFly = true;
-            this.getMoveControl().setWantedPosition(this.getX(), this.getY() + 0.5, this.getZ(), 0.75);
-        }
-
-        // Reset goals after rename
-        if (canFly && !this.getCustomName().getString().equalsIgnoreCase("AVIATION")) {
-            this.moveControl = new CustomFlyingMoveControl(this);
-            this.navigation = new GroundPathNavigation(this, this.level());
-
-            this.goalSelector.removeGoal(new RandomFlyGoal(this));
-
-            this.goalSelector.addGoal(5, new WaterAvoidingRandomStrollGoal(this, 1.0));
-
-            this.setNoGravity(false);
-            this.canFly = false;
-        }
-
-        // Egg lay
-        if (!this.level().isClientSide && this.isAlive() && !this.isBaby() && --this.eggTime <= 0) {
-            this.playSound(ModSounds.PUKEKO_DEATH.get()); // Change later
-            this.spawnAtLocation(ModItems.PUKEKO_SPAWN_EGG); // Change later
-            this.gameEvent(GameEvent.ENTITY_PLACE); // Allows to be detected by skulks?!?
-            eggTime = this.random.nextInt(6000) + 6000;
-        }
-    }
-
     // More Attributes
     @Override
     public boolean causeFallDamage(float fallDistance, float multiplier, DamageSource source) {
@@ -216,5 +290,29 @@ public class PukekoEntity extends Animal {
 
     public boolean isTransformAnimationPlaying() {
         return this.transformAnimationPlaying;
+    }
+
+    // Untransform Animation
+    public void startUntransformationAnimation() {
+        if (!untransformAnimationPlaying) {
+            this.untransformAnimationPlaying = true;
+            this.untransformAnimationTicks = 36;
+        }
+    }
+
+    public boolean isUntransformAnimationPlaying() {
+        return this.untransformAnimationPlaying;
+    }
+
+    // Attack Animation
+    public void startAttackAnimation() {
+        if (!attackAnimationPlaying) {
+            this.attackAnimationPlaying = true;
+            this.attackAnimationTicks = 10;
+        }
+    }
+
+    public boolean isAttackAnimationPlaying() {
+        return this.attackAnimationPlaying;
     }
 }

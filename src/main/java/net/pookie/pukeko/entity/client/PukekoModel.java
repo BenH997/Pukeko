@@ -76,7 +76,6 @@ public class PukekoModel<T extends PukekoEntity> extends HierarchicalModel<T> {
             PartDefinition cube_r2 = Propeller.addOrReplaceChild("cube_r2", CubeListBuilder.create().texOffs(32, 14).addBox(1.4F, -3.5F, 0.0F, 0.0F, 3.0F, 1.0F, new CubeDeformation(0.0F)), PartPose.offsetAndRotation(-0.5F, 2.0F, 1.5F, 0.0F, 1.5708F, 0.0F));
 
             return LayerDefinition.create(meshdefinition, 64, 64);
-
     }
 
     @Override
@@ -92,6 +91,8 @@ public class PukekoModel<T extends PukekoEntity> extends HierarchicalModel<T> {
 
         this.animate(entity.transformAnimationState, PukekoAnimations.ANIM_PUKEKO_TRANSFORM, ageInTicks, 1f);
         this.animate(entity.flyingAnimationState, PukekoAnimations.ANIM_PUKEKO_FLYING, ageInTicks, 1f);
+        this.animate(entity.untransformAnimationState, PukekoAnimations.ANIM_PUKEKO_UNTRANSFORM, ageInTicks, 1f);
+        this.animate(entity.attackAnimationSate, PukekoAnimations.ANIM_PUKEKO_ATTACK, ageInTicks, 1f);
 
     }
 
