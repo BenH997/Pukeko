@@ -28,16 +28,13 @@ import net.neoforged.neoforge.event.server.ServerStartingEvent;
 
 // TODO
 
-// * Add funny name ANNIHILATION
-    // * Make bird super aggressive
-    // * Like johnny
-// * Add placeable egg
-// * Make the egg hatch
-// * Make egg hatch tamed pukeko
+// * Make crab
+// * Make DUPLICATION
+    // * Make
 // * Give pukeko armor
 // * Add Drops
 // * Add Variants
-// * Add french villager
+// * Finish french villager
 
 @Mod(Pukeko.MODID)
 public class Pukeko {

@@ -94,6 +94,11 @@ public class PukekoModel<T extends PukekoEntity> extends HierarchicalModel<T> {
         this.animate(entity.untransformAnimationState, PukekoAnimations.ANIM_PUKEKO_UNTRANSFORM, ageInTicks, 1f);
         this.animate(entity.attackAnimationSate, PukekoAnimations.ANIM_PUKEKO_ATTACK, ageInTicks, 1f);
 
+//        this.Head.setPos(0, 12, -5);
+//        this.Body.setPos(0, 15, 0);
+//        this.Foot.setPos(0, 15, 0);
+//        this.TailHidden.setPos(0, 15, 0);
+
     }
 
     private void applyHeadRotation(float headYaw, float headPitch) {
@@ -107,6 +112,10 @@ public class PukekoModel<T extends PukekoEntity> extends HierarchicalModel<T> {
     @Override
     public void renderToBuffer(PoseStack poseStack, VertexConsumer vertexConsumer, int packedLight, int packedOverlay, int color) {
         WholePukeko.render(poseStack, vertexConsumer, packedLight, packedOverlay, color);
+//        Foot.render(poseStack, vertexConsumer, packedLight, packedOverlay, color);
+//        Body.render(poseStack, vertexConsumer, packedLight, packedOverlay, color);
+//        Head.render(poseStack, vertexConsumer, packedLight, packedOverlay, color);
+//        TailHidden.render(poseStack, vertexConsumer, packedLight, packedOverlay, color);
     }
 
     @Override

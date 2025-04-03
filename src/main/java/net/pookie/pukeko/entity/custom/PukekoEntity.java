@@ -19,6 +19,8 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec3;
+import net.pookie.pukeko.Pukeko;
 import net.pookie.pukeko.entity.ModEntities;
 import net.pookie.pukeko.entity.goals.PukekoFlyingMoveControl;
 import net.pookie.pukeko.entity.goals.PukekoRandomFlyGoal;
@@ -50,8 +52,12 @@ public class PukekoEntity extends Animal {
 
     private String entityName = null;
 
-    public boolean canFly = false;
+    // Different state booleans
+    private boolean canFly = false;
     private boolean annihilationActive = false;
+    private boolean duplicationActive = false;
+
+    private int duplicationTimer = 0;
 
     public PukekoEntity(EntityType<? extends Animal> entityType, Level level) {
         super(entityType, level);
@@ -122,6 +128,24 @@ public class PukekoEntity extends Animal {
     public void tick() {
         super.tick();
 
+        // Duplication
+        if (this.duplicationActive && this.duplicationTimer <= 0) {
+            Level level = this.level();
+            Vec3 position = this.position();
+
+            EntityType<PukekoEntity> entityType = ModEntities.PUKEKO.get(); // Replace 'MyEntity' with your entity class
+            PukekoEntity newEntity = entityType.create(level);
+            if (newEntity != null) {
+                newEntity.moveTo(position.x(), position.y() + 1, position.z(), this.getYRot(), this.getXRot());
+
+                level.addFreshEntity(newEntity);
+            }
+
+            this.duplicationTimer = 100;
+        } else {
+            this.duplicationTimer--;
+        }
+
         // Animations
         if (this.isTransformAnimationPlaying() && this.transformAnimationTicks <= 0) {
             this.transformAnimationTicks = -1;
@@ -178,6 +202,10 @@ public class PukekoEntity extends Animal {
                 this.goalSelector.removeGoal(new MeleeAttackGoal(this, 1.2D, true));
                 this.setTarget(null);
             }
+
+            if (duplicationActive) {
+                this.duplicationActive = false;
+            }
         }
 
         // ANNIHILATION enabling name
@@ -189,7 +217,7 @@ public class PukekoEntity extends Animal {
             this.goalSelector.addGoal(2, new MeleeAttackGoal(this, 2D, true));
 
             if (canFly) {
-                canFly = false;
+                this.canFly = false;
                 this.moveControl = new MoveControl(this);
                 this.navigation = new GroundPathNavigation(this, this.level());
                 this.goalSelector.addGoal(7, new WaterAvoidingRandomStrollGoal(this, 1.0));
@@ -200,6 +228,36 @@ public class PukekoEntity extends Animal {
 
                 this.setNoGravity(false);
                 this.addEffect(new MobEffectInstance(MobEffects.SLOW_FALLING, 100, 1));
+            }
+
+            if (duplicationActive) {
+                this.duplicationActive = false;
+            }
+        }
+
+        if (this.hasCustomName() && !this.duplicationActive && this.entityName.equals("DUPLICATION")) {
+            this.duplicationActive = true;
+            this.duplicationTimer = 50;
+
+            if (canFly) {
+                this.canFly = false;
+                this.moveControl = new MoveControl(this);
+                this.navigation = new GroundPathNavigation(this, this.level());
+                this.goalSelector.addGoal(7, new WaterAvoidingRandomStrollGoal(this, 1.0));
+                this.goalSelector.addGoal(1, new PanicGoal(this, 2.0));
+                this.goalSelector.removeGoal(new PukekoRandomFlyGoal(this));
+
+                this.startUntransformationAnimation();
+
+                this.setNoGravity(false);
+                this.addEffect(new MobEffectInstance(MobEffects.SLOW_FALLING, 100, 1));
+            }
+
+            if (annihilationActive) {
+                annihilationActive = false;
+                this.targetSelector.removeGoal(new PukekoAttackGoal(this));
+                this.goalSelector.removeGoal(new MeleeAttackGoal(this, 1.2D, true));
+                this.setTarget(null);
             }
         }
 
@@ -226,7 +284,11 @@ public class PukekoEntity extends Animal {
             this.targetSelector.removeGoal(new PukekoAttackGoal(this));
             this.goalSelector.removeGoal(new MeleeAttackGoal(this, 2D, true));
             this.setTarget(null);
+        }
 
+        // Reset duplication
+        if (duplicationActive && !this.entityName.equals("DUPLICATION")) {
+            this.duplicationActive = false;
         }
     }
 
