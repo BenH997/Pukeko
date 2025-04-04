@@ -18,9 +18,7 @@ public class ModSounds {
     public static final Supplier<SoundEvent> PUKEKO_AMBIENT_2 = registerSoundEvent("pukeko_ambient_2");
     public static final Supplier<SoundEvent> PUKEKO_AMBIENT_3 = registerSoundEvent("pukeko_ambient_3");
     public static final Supplier<SoundEvent> PUKEKO_DEATH = registerSoundEvent("pukeko_death");
-    public static final Supplier<SoundEvent> PUKEKO_HURT_1 = registerSoundEvent("pukeko_hurt_1");
-    public static final Supplier<SoundEvent> PUKEKO_HURT_2 = registerSoundEvent("pukeko_hurt_2");
-    public static final Supplier<SoundEvent> PUKEKO_HURT_3 = registerSoundEvent("pukeko_hurt_3");
+    public static final Supplier<SoundEvent> PUKEKO_HURT = registerSoundEvent("pukeko_hurt");
 
     private static Supplier<SoundEvent> registerSoundEvent(String name) {
         ResourceLocation id = ResourceLocation.fromNamespaceAndPath(Pukeko.MODID, name);

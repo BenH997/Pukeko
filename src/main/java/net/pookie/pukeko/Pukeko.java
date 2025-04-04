@@ -28,12 +28,11 @@ import net.neoforged.neoforge.event.server.ServerStartingEvent;
 
 // TODO
 
+// * Pukeko morphing 😈
+// * Sync duplication animation
 // * Make crab
-// * Make DUPLICATION
-    // * Make
 // * Give pukeko armor
 // * Add Drops
-// * Add Variants
 // * Finish french villager
 
 @Mod(Pukeko.MODID)
