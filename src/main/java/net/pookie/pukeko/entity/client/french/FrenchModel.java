@@ -1,6 +1,5 @@
-package net.pookie.pukeko.entity.client;
+package net.pookie.pukeko.entity.client.french;
 
-import net.minecraft.client.gui.LayeredDraw;
 import net.minecraft.client.model.HeadedModel;
 import net.minecraft.client.model.HierarchicalModel;
 import net.minecraft.client.model.VillagerHeadModel;
@@ -14,7 +13,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.npc.AbstractVillager;
 import net.pookie.pukeko.Pukeko;
 
-public class FrenchModel<T extends Entity> extends HierarchicalModel<T> implements HeadedModel, VillagerHeadModel { // Might cause issues
+public class FrenchModel<T extends Entity> extends HierarchicalModel<T> implements HeadedModel, VillagerHeadModel {
     public static final ModelLayerLocation LAYER_LOCATION =
             new ModelLayerLocation(ResourceLocation.fromNamespaceAndPath(Pukeko.MODID, "french"), "main");
     private final ModelPart root;

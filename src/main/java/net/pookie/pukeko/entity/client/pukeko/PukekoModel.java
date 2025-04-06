@@ -1,4 +1,4 @@
-package net.pookie.pukeko.entity.client;
+package net.pookie.pukeko.entity.client.pukeko;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;

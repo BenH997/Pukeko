@@ -3,8 +3,9 @@ package net.pookie.pukeko;
 import net.minecraft.client.renderer.entity.EntityRenderers;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.pookie.pukeko.entity.ModEntities;
-import net.pookie.pukeko.entity.client.FrenchRenderer;
-import net.pookie.pukeko.entity.client.PukekoRenderer;
+import net.pookie.pukeko.entity.client.french.FrenchRenderer;
+import net.pookie.pukeko.entity.client.kiwi.KiwiRenderer;
+import net.pookie.pukeko.entity.client.pukeko.PukekoRenderer;
 import net.pookie.pukeko.sounds.ModSounds;
 import net.pookie.pukeko.items.ModItems;
 import org.slf4j.Logger;
@@ -28,6 +29,13 @@ import net.neoforged.neoforge.event.server.ServerStartingEvent;
 
 // TODO
 
+// * Finish Kiwi
+    // * Add sounds
+// * Make tameable
+    // * Eats Kiwis
+    // * Kiwis spawn at pukeko temples
+    // * Drops kiwi (hard to tell if kiwi (bird) or fruit)
+// * Add Kiwis
 // * Pukeko morphing 😈
 // * Sync duplication animation
 // * Make crab
@@ -73,10 +81,8 @@ public class Pukeko {
     private void addCreative(BuildCreativeModeTabContentsEvent event) {
         if (event.getTabKey() == CreativeModeTabs.SPAWN_EGGS) {
             event.accept(ModItems.PUKEKO_SPAWN_EGG);
-        }
-
-        if (event.getTabKey() == CreativeModeTabs.SPAWN_EGGS) {
             event.accept(ModItems.FRENCH_SPAWN_EGG);
+            event.accept(ModItems.KIWI_SPAWN_EGG);
         }
     }
 
@@ -94,6 +100,7 @@ public class Pukeko {
         public static void onClientSetup(FMLClientSetupEvent event) {
             EntityRenderers.register(ModEntities.PUKEKO.get(), PukekoRenderer::new);
             EntityRenderers.register(ModEntities.FRENCH.get(), FrenchRenderer::new);
+            EntityRenderers.register(ModEntities.KIWI.get(), KiwiRenderer::new);
         }
     }
 }
