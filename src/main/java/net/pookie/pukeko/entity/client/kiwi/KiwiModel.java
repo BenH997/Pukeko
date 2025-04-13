@@ -45,9 +45,11 @@ public class KiwiModel<T extends KiwiEntity> extends HierarchicalModel<T> {
                 .texOffs(0, 14).addBox(-1.0F, -1.0F, -11.0F, 1.0F, 1.0F, 7.0F, new CubeDeformation(0.0F)), PartPose.offset(0.5F, -2.0F, -5.0F));
 
         PartDefinition LeftFoot = Kiwi.addOrReplaceChild("LeftFoot", CubeListBuilder.create().texOffs(20, 22).addBox(0.0F, -0.06F, -0.5F, 1.0F, 2.0F, 1.0F, new CubeDeformation(0.0F))
+                .texOffs(20, 22).addBox(0.0F, -2.06F, -0.5F, 1.0F, 2.0F, 1.0F, new CubeDeformation(0.0F))
                 .texOffs(0, 22).addBox(-0.5F, 1.95F, -1.5F, 2.0F, 0.0F, 2.0F, new CubeDeformation(0.0F)), PartPose.offset(2.0F, 5.0F, 4.5F));
 
         PartDefinition RightFoot = Kiwi.addOrReplaceChild("RightFoot", CubeListBuilder.create().texOffs(16, 22).addBox(0.0F, -0.06F, -0.5F, 1.0F, 2.0F, 1.0F, new CubeDeformation(0.0F))
+                .texOffs(16, 22).addBox(0.0F, -2.06F, -0.5F, 1.0F, 2.0F, 1.0F, new CubeDeformation(0.0F))
                 .texOffs(8, 22).addBox(-0.5F, 1.95F, -1.5F, 2.0F, 0.0F, 2.0F, new CubeDeformation(0.0F)), PartPose.offset(-4.0F, 5.0F, 4.5F));
 
         return LayerDefinition.create(meshdefinition, 64, 64);

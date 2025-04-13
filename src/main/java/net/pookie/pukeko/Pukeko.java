@@ -29,15 +29,14 @@ import net.neoforged.neoforge.event.server.ServerStartingEvent;
 
 // TODO
 
-// * Finish Kiwi
-    // * Add sounds
+// * Make pukeko monument
+    // * pukekos spawn at monument
+// * Make kiwis randomly spawn in jungles
 // * Make tameable
     // * Eats Kiwis
     // * Kiwis spawn at pukeko temples
     // * Drops kiwi (hard to tell if kiwi (bird) or fruit)
-// * Add Kiwis
 // * Pukeko morphing 😈
-// * Sync duplication animation
 // * Make crab
 // * Give pukeko armor
 // * Add Drops
@@ -79,10 +78,14 @@ public class Pukeko {
 
     // Add the example block item to the building blocks tab
     private void addCreative(BuildCreativeModeTabContentsEvent event) {
-        if (event.getTabKey() == CreativeModeTabs.SPAWN_EGGS) {
+        if (event.getTabKey().equals(CreativeModeTabs.SPAWN_EGGS)) {
             event.accept(ModItems.PUKEKO_SPAWN_EGG);
             event.accept(ModItems.FRENCH_SPAWN_EGG);
             event.accept(ModItems.KIWI_SPAWN_EGG);
+        }
+
+        if (event.getTabKey().equals(CreativeModeTabs.FOOD_AND_DRINKS)) {
+            event.accept(ModItems.KIWI);
         }
     }
 

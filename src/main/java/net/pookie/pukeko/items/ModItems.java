@@ -1,5 +1,7 @@
 package net.pookie.pukeko.items;
 
+import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.Item;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.common.DeferredSpawnEggItem;
@@ -11,8 +13,13 @@ import net.pookie.pukeko.entity.ModEntities;
 public class ModItems {
     public static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(Pukeko.MODID);
 
-    // Spawn Eggs
+    public static final DeferredItem<Item> KIWI = ITEMS.register("kiwi",
+            () -> new Item(new Item.Properties().food(new FoodProperties.Builder()
+                    .nutrition(4)
+                    .saturationModifier(4.0F)
+                    .build())));
 
+    // Spawn Eggs
     public static final DeferredItem<Item> PUKEKO_SPAWN_EGG = ITEMS.register("pukeko_spawn_egg",
             () -> new DeferredSpawnEggItem(ModEntities.PUKEKO, 0x5e5e5e, 0xe08c9c,
                     new Item.Properties()));

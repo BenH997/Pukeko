@@ -28,5 +28,23 @@
     "sounds": [
       "pukekomod:pukeko_hurt"
     ]
+  },
+  "kiwi_ambient_1": {
+    "subtitle": "sounds.pukekomod.kiwi_ambient_1",
+    "sounds": [
+      "pukekomod:kiwi_ambient_1"
+    ]
+  },
+  "kiwi_ambient_2": {
+    "subtitle": "sounds.pukekomod.kiwi_ambient_2",
+    "sounds": [
+      "pukekomod:kiwi_ambient_2"
+    ]
+  },
+  "kiwi_ambient_3": {
+    "subtitle": "sounds.pukekomod.kiwi_ambient_3",
+    "sounds": [
+      "pukekomod:kiwi_ambient_3"
+    ]
   }
 }

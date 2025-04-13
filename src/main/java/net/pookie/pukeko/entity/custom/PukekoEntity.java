@@ -23,6 +23,7 @@ import net.minecraft.world.phys.Vec3;
 import net.pookie.pukeko.entity.ModEntities;
 import net.pookie.pukeko.entity.goals.PukekoFlyingMoveControl;
 import net.pookie.pukeko.entity.goals.PukekoRandomFlyGoal;
+import net.pookie.pukeko.items.ModItems;
 import net.pookie.pukeko.sounds.ModSounds;
 import org.jetbrains.annotations.Nullable;
 import net.minecraft.world.item.Items;
@@ -77,10 +78,12 @@ public class PukekoEntity extends Animal {
     @Override
     protected void registerGoals() {
         this.goalSelector.addGoal(0, new FloatGoal(this));
+        this.goalSelector.addGoal(1, new MeleeAttackGoal(this, 1.15, false));
+        this.targetSelector.addGoal(1, new NearestAttackableTargetGoal<>(this, KiwiEntity.class, false));
         this.goalSelector.addGoal(1, new PanicGoal(this, 3.0));
         this.goalSelector.addGoal(2, new AvoidEntityGoal<>(this, FrenchEntity.class, 6.0F, 5.0, 5.2));
         this.goalSelector.addGoal(4, new BreedGoal(this, 1.0));
-        this.goalSelector.addGoal(5, new TemptGoal(this, 1.25, Ingredient.of(Items.BAMBOO), false));
+        this.goalSelector.addGoal(5, new TemptGoal(this, 1.25, Ingredient.of(ModItems.KIWI), false));
         this.goalSelector.addGoal(6, new FollowParentGoal(this, 1.25));
         this.goalSelector.addGoal(7, new WaterAvoidingRandomStrollGoal(this, 1.0));
         this.goalSelector.addGoal(8, new LookAtPlayerGoal(this, Player.class, 10.0F));
@@ -123,7 +126,7 @@ public class PukekoEntity extends Animal {
 
     @Override
     public boolean isFood(ItemStack stack) {
-        return stack.is(Items.BAMBOO);
+        return stack.is(ModItems.KIWI);
     }
 
     @Nullable
