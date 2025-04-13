@@ -46,5 +46,11 @@
     "sounds": [
       "pukekomod:kiwi_ambient_3"
     ]
+  },
+  "kiwi_roar": {
+    "subtitle": "sounds.pukekomod.kiwi_roar",
+    "sounds": [
+      "pukekomod:kiwi_roar"
+    ]
   }
 }

@@ -22,7 +22,7 @@ public class ModSounds {
     public static final Supplier<SoundEvent> KIWI_AMBIENT_1 = registerSoundEvent("kiwi_ambient_1");
     public static final Supplier<SoundEvent> KIWI_AMBIENT_2 = registerSoundEvent("kiwi_ambient_2");
     public static final Supplier<SoundEvent> KIWI_AMBIENT_3 = registerSoundEvent("kiwi_ambient_3");
-
+    public static final Supplier<SoundEvent> KIWI_ROAR = registerSoundEvent("kiwi_roar");
 
     private static Supplier<SoundEvent> registerSoundEvent(String name) {
         ResourceLocation id = ResourceLocation.fromNamespaceAndPath(Pukeko.MODID, name);

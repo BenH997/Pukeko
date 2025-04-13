@@ -1,7 +1,11 @@
 package net.pookie.pukeko.entity.custom;
 
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.AgeableMob;
 import net.minecraft.world.entity.AnimationState;
@@ -26,17 +30,23 @@ public class KiwiEntity extends Animal {
         super(entityType, level);
     }
 
-    // Basic Animation stuff
+    // Idle/dance animation
     public final AnimationState idleAnimationState = new AnimationState();
     public int idleCooldown = this.random.nextInt(3000) + 3000;
     private boolean idleAnimationPlaying = false;
     private int idleAnimationTicks = 80;
 
+    // Roar animation
+    public final AnimationState roarAnimationState = new AnimationState();
+    public int roarCooldown = this.random.nextInt(8400) + 8400;
+    private boolean roarAnimationPlaying = false;
+    private int roarAnimationTicks = 105;
+
     @Override
     protected void registerGoals() {
         this.goalSelector.addGoal(0, new FloatGoal(this));
         this.goalSelector.addGoal(1, new PanicGoal(this, 1.5));
-        this.goalSelector.addGoal(1, new AvoidEntityGoal<>(this, PukekoEntity.class, 20, 1.15,1.07));
+        this.goalSelector.addGoal(1, new AvoidEntityGoal<>(this, PukekoEntity.class, 5, 1.15,1.07));
         this.goalSelector.addGoal(2, new WaterAvoidingRandomStrollGoal(this, 1.0));
         this.goalSelector.addGoal(3, new LookAtPlayerGoal(this, Player.class, 10.0F));
         this.goalSelector.addGoal(4, new RandomLookAroundGoal(this));
@@ -59,6 +69,7 @@ public class KiwiEntity extends Animal {
 
         if (this.idleCooldown <= 0) {
             this.idleAnimationPlaying = true;
+            this.idleAnimationTicks = 80;
             this.idleCooldown = this.random.nextInt(3000) + 3000;
         } else {
             this.idleCooldown--;
@@ -71,8 +82,37 @@ public class KiwiEntity extends Animal {
             idleAnimationTicks--;
         }
 
+        if (this.roarCooldown <= 0) {
+            this.roarAnimationPlaying = true;
+            this.roarAnimationTicks = 105;
+            this.roarCooldown = this.random.nextInt(8400) + 8400;
+        } else {
+            this.roarCooldown--;
+        }
+
+        if (roarAnimationPlaying) {
+            if (this.level().isClientSide() && this.roarAnimationTicks == 85) {
+                this.level().playLocalSound(this.getX(), this.getY(), this.getZ(), ModSounds.KIWI_ROAR.get(), SoundSource.HOSTILE, 1.0F, 1.0F, false);
+            }
+
+            this.roarAnimationTicks--;
+
+            if (this.roarAnimationTicks <= 0) {
+                this.roarAnimationTicks = 105;
+                this.roarAnimationPlaying = false;
+            }
+        }
+
+        // Intersection handling
+        if (roarAnimationPlaying && idleAnimationPlaying) {
+            idleAnimationPlaying = false;
+            idleAnimationTicks = 80;
+            idleCooldown = this.random.nextInt(1000) + 1000;
+        }
+
         if (this.level().isClientSide()) {
             this.idleAnimationState.animateWhen(idleAnimationPlaying, tickCount);
+            this.roarAnimationState.animateWhen(roarAnimationPlaying, tickCount);
         }
     }
 
@@ -108,5 +148,9 @@ public class KiwiEntity extends Animal {
         for (int i = 0; i < randomDrops; i++) {
             this.spawnAtLocation(ModItems.KIWI);
         }
+    }
+
+    public boolean isRoarAnimationPlaying() {
+        return roarAnimationPlaying;
     }
 }
