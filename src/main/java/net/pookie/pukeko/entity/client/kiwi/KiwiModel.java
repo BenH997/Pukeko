@@ -2,18 +2,14 @@ package net.pookie.pukeko.entity.client.kiwi;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import net.minecraft.client.model.HeadedModel;
 import net.minecraft.client.model.HierarchicalModel;
-import net.minecraft.client.model.VillagerHeadModel;
 import net.minecraft.client.model.geom.ModelLayerLocation;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.model.geom.builders.*;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
-import net.minecraft.world.entity.Entity;
 import net.pookie.pukeko.Pukeko;
-import net.pookie.pukeko.entity.client.pukeko.PukekoAnimations;
 import net.pookie.pukeko.entity.custom.KiwiEntity;
 
 public class KiwiModel<T extends KiwiEntity> extends HierarchicalModel<T> {

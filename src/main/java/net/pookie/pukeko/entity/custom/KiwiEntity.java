@@ -38,7 +38,7 @@ public class KiwiEntity extends Animal {
 
     // Roar animation
     public final AnimationState roarAnimationState = new AnimationState();
-    public int roarCooldown = this.random.nextInt(8400) + 8400;
+    public int roarCooldown = this.random.nextInt(4000) + 1000;
     private boolean roarAnimationPlaying = false;
     private int roarAnimationTicks = 105;
 
@@ -101,6 +101,8 @@ public class KiwiEntity extends Animal {
                 this.roarAnimationTicks = 105;
                 this.roarAnimationPlaying = false;
             }
+
+            this.getMoveControl().setWantedPosition(this.getX(), this.getY(), this.getZ(), 0.0);
         }
 
         // Intersection handling
