@@ -3,9 +3,13 @@ package net.pookie.pukeko.entity.custom;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.AgeableMob;
 import net.minecraft.world.entity.AnimationState;
@@ -19,6 +23,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec3;
 import net.pookie.pukeko.entity.ModEntities;
 import net.pookie.pukeko.items.ModItems;
 import net.pookie.pukeko.sounds.ModSounds;
@@ -38,7 +43,7 @@ public class KiwiEntity extends Animal {
 
     // Roar animation
     public final AnimationState roarAnimationState = new AnimationState();
-    public int roarCooldown = this.random.nextInt(4000) + 1000;
+    public int roarCooldown = this.random.nextInt(100) + 100; // 4000 + 3000
     private boolean roarAnimationPlaying = false;
     private int roarAnimationTicks = 105;
 
@@ -92,7 +97,8 @@ public class KiwiEntity extends Animal {
 
         if (roarAnimationPlaying) {
             if (this.level().isClientSide() && this.roarAnimationTicks == 85) {
-                this.level().playLocalSound(this.getX(), this.getY(), this.getZ(), ModSounds.KIWI_ROAR.get(), SoundSource.HOSTILE, 1.0F, 1.0F, false);
+                // this.level().playLocalSound(this.getX(), this.getY(), this.getZ(), ModSounds.KIWI_ROAR.get(), SoundSource.AMBIENT, 1.0F, 1.0F, false);
+//                this.makeSound(ModSounds.KIWI_ROAR.get());
             }
 
             this.roarAnimationTicks--;
@@ -138,17 +144,6 @@ public class KiwiEntity extends Animal {
             return ModSounds.KIWI_AMBIENT_2.get();
         } else {
             return ModSounds.KIWI_AMBIENT_3.get();
-        }
-    }
-
-    @Override
-    protected void dropCustomDeathLoot(ServerLevel level, DamageSource damageSource, boolean recentlyHit) {
-        super.dropCustomDeathLoot(level, damageSource, recentlyHit);
-
-        int randomDrops = this.random.nextInt(3);
-
-        for (int i = 0; i < randomDrops; i++) {
-            this.spawnAtLocation(ModItems.KIWI);
         }
     }
 

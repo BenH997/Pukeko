@@ -29,9 +29,7 @@ import net.neoforged.neoforge.event.server.ServerStartingEvent;
 
 // TODO
 
-// * Make pukeko monument
-    // * pukekos spawn at monument
-// * Make kiwis randomly spawn in jungles
+// * Fix global kiwi roar
 // * Make tameable
     // * Eats Kiwis
     // * Kiwis spawn at pukeko temples

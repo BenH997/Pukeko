@@ -1,9 +1,15 @@
 package net.pookie.pukeko.event;
 
+import net.minecraft.world.entity.SpawnPlacementType;
+import net.minecraft.world.entity.SpawnPlacementTypes;
+import net.minecraft.world.entity.SpawnPlacements;
+import net.minecraft.world.entity.animal.Animal;
+import net.minecraft.world.level.levelgen.Heightmap;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent;
+import net.neoforged.neoforge.event.entity.RegisterSpawnPlacementsEvent;
 import net.pookie.pukeko.Pukeko;
 import net.pookie.pukeko.entity.ModEntities;
 import net.pookie.pukeko.entity.client.french.FrenchModel;
@@ -28,5 +34,11 @@ public class ModEventBusEvents {
         event.put(ModEntities.PUKEKO.get(), PukekoEntity.createAttributes().build());
         event.put(ModEntities.FRENCH.get(), FrenchEntity.createAttributes().build());
         event.put(ModEntities.KIWI.get(), KiwiEntity.createAttributes().build());
+    }
+
+    @SubscribeEvent
+    public static void registerSpawnPlacements(RegisterSpawnPlacementsEvent event) {
+        event.register(ModEntities.KIWI.get(), SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
+                Animal::checkAnimalSpawnRules, RegisterSpawnPlacementsEvent.Operation.REPLACE);
     }
 }

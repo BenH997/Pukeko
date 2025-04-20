@@ -4,6 +4,16 @@
   "item.pukekomod.french_spawn_egg": "French Spawn Egg",
   "item.pukekomod.kiwi_spawn_egg": "Kiwi Spawn Egg",
 
+  "sounds.pukekomod.pukeko_ambient_1": "EOIOIOI",
+  "sounds.pukekomod.pukeko_ambient_2": "EOIOIOI",
+  "sounds.pukekomod.pukeko_ambient_3": "EOIOIOI",
+  "sounds.pukekomod.pukeko_death": "Baba Booey",
+  "sounds.pukekomod.pukeko_hurt": "Pukeko starts busting a move",
+  "sounds.pukekomod.kiwi_ambient_1": "Kiwi rings up customer",
+  "sounds.pukekomod.kiwi_ambient_2": "Kiwi rings up customer",
+  "sounds.pukekomod.kiwi_ambient_3": "Kiwi rings up customer",
+  "sounds.pukekomod.kiwi_roar": "ROARRRR",
+
   "entity.mccourse.pukeko": "Pukeko",
   "entity.mccourse.french": "French Person",
   "entity.mccourse.kiwi": "Kiwi"

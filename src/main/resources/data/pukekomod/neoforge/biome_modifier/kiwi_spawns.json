@@ -1,0 +1,10 @@
+{
+  "type": "neoforge:add_spawns",
+  "biomes": "minecraft:jungle",
+  "spawners": {
+    "type": "pukekomod:kiwi",
+    "weight": 20,
+    "minCount": 1,
+    "maxCount": 3
+  }
+}
