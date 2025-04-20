@@ -97,8 +97,8 @@ public class KiwiEntity extends Animal {
 
         if (roarAnimationPlaying) {
             if (this.level().isClientSide() && this.roarAnimationTicks == 85) {
-                // this.level().playLocalSound(this.getX(), this.getY(), this.getZ(), ModSounds.KIWI_ROAR.get(), SoundSource.AMBIENT, 1.0F, 1.0F, false);
-//                this.makeSound(ModSounds.KIWI_ROAR.get());
+                 this.level().playLocalSound(this.getX(), this.getY(), this.getZ(), ModSounds.KIWI_ROAR.get(), SoundSource.AMBIENT, 1.0F, 1.0F, false);
+                this.makeSound(ModSounds.KIWI_ROAR.get());
             }
 
             this.roarAnimationTicks--;
