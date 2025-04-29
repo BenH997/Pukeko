@@ -2,6 +2,9 @@ package net.pookie.pukeko.entity.custom;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
+import net.minecraft.core.Holder;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.network.protocol.game.ClientboundSoundPacket;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
@@ -23,11 +26,14 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.pookie.pukeko.entity.ModEntities;
 import net.pookie.pukeko.items.ModItems;
 import net.pookie.pukeko.sounds.ModSounds;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.List;
 
 public class KiwiEntity extends Animal {
 
@@ -97,8 +103,9 @@ public class KiwiEntity extends Animal {
 
         if (roarAnimationPlaying) {
             if (this.level().isClientSide() && this.roarAnimationTicks == 85) {
-                 this.level().playLocalSound(this.getX(), this.getY(), this.getZ(), ModSounds.KIWI_ROAR.get(), SoundSource.AMBIENT, 1.0F, 1.0F, false);
-                this.makeSound(ModSounds.KIWI_ROAR.get());
+                this.level().playLocalSound(getX(), getY(), getZ(), ModSounds.KIWI_ROAR.get(), SoundSource.AMBIENT, 1.0f, 1.0f, true);
+//                this.level().playLocalSound(this.getX(), this.getY(), this.getZ(), ModSounds.KIWI_ROAR.get(), SoundSource.AMBIENT, 1.0F, 1.0F, false);
+                // this.makeSound(ModSounds.KIWI_ROAR.get());
             }
 
             this.roarAnimationTicks--;

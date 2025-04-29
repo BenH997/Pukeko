@@ -2,6 +2,9 @@ package net.pookie.pukeko.entity.custom;
 
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
@@ -19,7 +22,9 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.fml.common.Mod;
 import net.pookie.pukeko.entity.ModEntities;
 import net.pookie.pukeko.entity.goals.PukekoFlyingMoveControl;
 import net.pookie.pukeko.entity.goals.PukekoRandomFlyGoal;
@@ -30,7 +35,7 @@ import net.minecraft.world.item.Items;
 
 import java.util.Random;
 
-public class PukekoEntity extends Animal {
+public class PukekoEntity extends Animal implements Saddleable {
 
     // Transform Animation
     public final AnimationState transformAnimationState = new AnimationState();
@@ -64,6 +69,7 @@ public class PukekoEntity extends Animal {
     private boolean canFly = false;
     private boolean annihilationActive = false;
     private boolean duplicationActive = false;
+    private boolean locomotionActive = false;
 
     private int duplicationTimer = 0;
 
@@ -88,6 +94,21 @@ public class PukekoEntity extends Animal {
         this.goalSelector.addGoal(7, new WaterAvoidingRandomStrollGoal(this, 1.0));
         this.goalSelector.addGoal(8, new LookAtPlayerGoal(this, Player.class, 10.0F));
         this.goalSelector.addGoal(9, new RandomLookAroundGoal(this));
+    }
+
+    @Override
+    public boolean isSaddleable() {
+        return this.locomotionActive;
+    }
+
+    @Override
+    public void equipSaddle(ItemStack itemStack, @Nullable SoundSource soundSource) {
+
+    }
+
+    @Override
+    public boolean isSaddled() {
+        return false;
     }
 
     public class PukekoAttackGoal extends NearestAttackableTargetGoal<LivingEntity> {
@@ -221,7 +242,7 @@ public class PukekoEntity extends Animal {
             disableNonActiveAbilities("AVIATION");
         }
 
-        // ANNIHILATION enabling name
+        // Annihilation enabling name
         if (this.hasCustomName() && !this.annihilationActive && this.entityName.equals("ANNIHILATION")) {
             this.annihilationActive = true;
             this.goalSelector.removeGoal(new PanicGoal(this, 3.0F));
@@ -240,7 +261,14 @@ public class PukekoEntity extends Animal {
             disableNonActiveAbilities("DUPLICATION");
         }
 
-        // Reset goals after rename
+        if (this.hasCustomName() && !this.locomotionActive && this.entityName.equals("LOCOMOTION")) {
+            this.locomotionActive = true;
+
+            disableNonActiveAbilities("LOCOMOTION");
+        }
+
+        // Reset pukeko after rename
+        // Reset flight
         if (canFly && !this.entityName.equals("AVIATION")) {
             this.canFly = false;
             this.moveControl = new MoveControl(this);
@@ -271,6 +299,90 @@ public class PukekoEntity extends Animal {
             this.duplicationActive = false;
             this.duplicationAnimationPlaying = false;
         }
+
+        if (locomotionActive && !this.entityName.equals("LOCOMOTION")) {
+            this.locomotionActive = false;
+        }
+    }
+
+    private void disableNonActiveAbilities(String currentlyActive) {
+        if (!currentlyActive.equals("AVIATION") && this.canFly) {
+            this.canFly = false;
+            this.moveControl = new MoveControl(this);
+            this.navigation = new GroundPathNavigation(this, this.level());
+            this.goalSelector.addGoal(7, new WaterAvoidingRandomStrollGoal(this, 1.0));
+            this.goalSelector.addGoal(1, new PanicGoal(this, 3.0));
+            this.goalSelector.removeGoal(new PukekoRandomFlyGoal(this));
+
+            this.startUntransformationAnimation();
+
+            this.setNoGravity(false);
+            this.addEffect(new MobEffectInstance(MobEffects.SLOW_FALLING, 100, 1));
+        }
+
+        if (!currentlyActive.equals("ANNIHILATION") && this.annihilationActive) {
+            annihilationActive = false;
+            this.targetSelector.removeGoal(new PukekoAttackGoal(this));
+            this.goalSelector.removeGoal(new MeleeAttackGoal(this, 2.0D, true));
+            this.goalSelector.addGoal(1, new PanicGoal(this, 3.0F));
+            this.setTarget(null);
+        }
+
+        if (!currentlyActive.equals("DUPLICATION") && this.duplicationActive) {
+            this.duplicationActive = false;
+            this.duplicationAnimationPlaying = false;
+        }
+
+        if (!currentlyActive.equals("LOCOMOTION") && this.locomotionActive) {
+            this.locomotionActive = false;
+        }
+    }
+
+    @Override
+    public InteractionResult mobInteract(Player player, InteractionHand hand) {
+        super.mobInteract(player, hand);
+        if (this.locomotionActive) {
+            ItemStack item = player.getItemInHand(hand);
+            if (!this.level().isClientSide && !item.is(ModItems.KIWI)) {
+                player.startRiding(this);
+            }
+
+            return InteractionResult.sidedSuccess(this.level().isClientSide);
+        } else {
+            InteractionResult interactionresult = super.mobInteract(player, hand);
+            return interactionresult;
+        }
+    }
+
+    @Override
+    public void travel(Vec3 travelVector) {
+        if (this.locomotionActive && this.getFirstPassenger() instanceof Player player) {
+            this.setXRot(player.getXRot() * 0.5f);
+            this.setYRot(player.getYRot());
+
+            this.setSpeed((float) (this.getAttributeValue(Attributes.MOVEMENT_SPEED) * 1.25f));
+
+            float forward = player.zza;
+            float strafe = player.xxa;
+
+            super.travel(new Vec3(strafe, travelVector.y, forward));
+        } else {
+            super.travel(travelVector);
+        }
+    }
+
+    @Override
+    public float maxUpStep() {
+        if (this.locomotionActive) {
+            return 2.0f;
+        } else {
+            return 0.6f;
+        }
+    }
+
+    @Override
+    protected float getRiddenSpeed(Player player) {
+        return (float) (this.getAttributeValue(Attributes.MOVEMENT_SPEED) * 2.0f);
     }
 
     // Sounds
@@ -348,34 +460,5 @@ public class PukekoEntity extends Animal {
     // Duplication getter
     public boolean isDuplicationActive() {
         return this.duplicationActive;
-    }
-
-    private void disableNonActiveAbilities(String currentlyActive) {
-        if (!currentlyActive.equals("AVIATION") && this.canFly) {
-            this.canFly = false;
-            this.moveControl = new MoveControl(this);
-            this.navigation = new GroundPathNavigation(this, this.level());
-            this.goalSelector.addGoal(7, new WaterAvoidingRandomStrollGoal(this, 1.0));
-            this.goalSelector.addGoal(1, new PanicGoal(this, 3.0));
-            this.goalSelector.removeGoal(new PukekoRandomFlyGoal(this));
-
-            this.startUntransformationAnimation();
-
-            this.setNoGravity(false);
-            this.addEffect(new MobEffectInstance(MobEffects.SLOW_FALLING, 100, 1));
-        }
-
-        if (!currentlyActive.equals("ANNIHILATION") && this.annihilationActive) {
-            annihilationActive = false;
-            this.targetSelector.removeGoal(new PukekoAttackGoal(this));
-            this.goalSelector.removeGoal(new MeleeAttackGoal(this, 2.0D, true));
-            this.goalSelector.addGoal(1, new PanicGoal(this, 3.0F));
-            this.setTarget(null);
-        }
-
-        if (!currentlyActive.equals("DUPLICATION") && this.duplicationActive) {
-            this.duplicationActive = false;
-            this.duplicationAnimationPlaying = false;
-        }
     }
 }

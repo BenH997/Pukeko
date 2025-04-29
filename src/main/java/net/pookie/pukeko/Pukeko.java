@@ -29,10 +29,11 @@ import net.neoforged.neoforge.event.server.ServerStartingEvent;
 
 // TODO
 
+// * Fix kiwi spawning in water
 // * Fix global kiwi roar
 // * Make tameable
     // * Eats Kiwis
-    // * Kiwis spawn at pukeko temples
+    // * pukekos spawn at pukeko temples
     // * Drops kiwi (hard to tell if kiwi (bird) or fruit)
 // * Pukeko morphing 😈
 // * Make crab
